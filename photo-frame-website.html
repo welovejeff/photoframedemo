@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Photo Framing Website</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+        }
+        .container {
+            text-align: center;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            max-width: 90%;
+            width: 600px;
+        }
+        #frameCanvas {
+            max-width: 100%;
+            margin-top: 20px;
+        }
+        #framePreview {
+            max-width: 100px;
+            margin-top: 10px;
+        }
+        #errorMessage {
+            color: red;
+            margin-top: 10px;
+        }
+        #instructions {
+            background-color: #e6f7ff;
+            border: 1px solid #91d5ff;
+            border-radius: 4px;
+            padding: 10px;
+            margin-top: 20px;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Add a Frame to Your Photo</h1>
+        <input type="file" id="imageUpload" accept="image/*">
+        <br><br>
+        <label for="frameSelect">Choose a frame:</label>
+        <select id="frameSelect">
+            <option value="placeholder-frame.png">Placeholder Frame</option>
+        </select>
+        <br>
+        <img id="framePreview" src="https://via.placeholder.com/100" alt="Frame Preview">
+        <br><br>
+        <label for="frameSize">Frame Size:</label>
+        <input type="range" id="frameSize" min="1" max="20" value="10">
+        <br><br>
+        <canvas id="frameCanvas"></canvas>
+        <div id="errorMessage"></div>
+        <br><br>
+        <button id="downloadBtn" disabled>Download Framed Photo</button>
+        <!-- <div id="instructions">
+            <h3>Instructions:</h3>
+            <p>1. Replace the placeholder frame image with your own:</p>
+            <ul>
+                <li>Save your frame image as "placeholder-frame.png" in the same directory as this HTML file.</li>
+                <li>Ensure your frame image has a transparent center.</li>
+            </ul>
+            <p>2. Refresh this page after adding your frame image.</p>
+            <p>3. Upload a photo and adjust the frame size as needed.</p>
+        </div> -->
+    </div>
+
+    <script>
+        const imageUpload = document.getElementById('imageUpload');
+        const frameSelect = document.getElementById('frameSelect');
+        const frameSize = document.getElementById('frameSize');
+        const canvas = document.getElementById('frameCanvas');
+        const ctx = canvas.getContext('2d');
+        const downloadBtn = document.getElementById('downloadBtn');
+        const errorMessage = document.getElementById('errorMessage');
+        const framePreview = document.getElementById('framePreview');
+        let originalImage = null;
+
+        // Load the frame preview
+        const framePreviewImg = new Image();
+        framePreviewImg.onload = function() {
+            framePreview.src = this.src;
+        }
+        framePreviewImg.onerror = function() {
+            framePreview.src = 'https://via.placeholder.com/100/?text=Frame+Not+Found';
+            showError("Frame image not found. Please follow the instructions below.");
+        }
+        framePreviewImg.src = frameSelect.value;
+
+        imageUpload.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            const reader = new FileReader();
+
+            reader.onload = function(event) {
+                originalImage = new Image();
+                originalImage.onload = function() {
+                    drawImageWithFrame();
+                    downloadBtn.disabled = false;
+                }
+                originalImage.onerror = function() {
+                    showError("Failed to load the image. Please try another file.");
+                }
+                originalImage.src = event.target.result;
+            }
+            reader.onerror = function() {
+                showError("Failed to read the file. Please try again.");
+            }
+            reader.readAsDataURL(file);
+        });
+
+        frameSelect.addEventListener('change', drawImageWithFrame);
+        frameSize.addEventListener('input', drawImageWithFrame);
+
+        function drawImageWithFrame() {
+            if (!originalImage) return;
+
+            const frameBorderSize = frameSize.value / 100;
+            const frameWidth = originalImage.width * (1 + frameBorderSize * 2);
+            const frameHeight = originalImage.height * (1 + frameBorderSize * 2);
+
+            canvas.width = frameWidth;
+            canvas.height = frameHeight;
+
+            // Draw the original image first
+            ctx.drawImage(originalImage, 0, 0, canvas.width, canvas.height);
+
+            // Draw the frame on top
+            const frame = new Image();
+            frame.onload = function() {
+                ctx.drawImage(frame, 0, 0, frameWidth, frameHeight);
+            }
+            frame.onerror = function() {
+                showError("Failed to load the frame. Please check if the frame image exists.");
+            }
+            frame.src = frameSelect.value;
+        }
+
+        downloadBtn.addEventListener('click', function() {
+            if (!originalImage) {
+                showError("Please upload an image first.");
+                return;
+            }
+            const link = document.createElement('a');
+            link.download = 'framed-photo.png';
+            link.href = canvas.toDataURL();
+            link.click();
+        });
+
+        function showError(message) {
+            errorMessage.textContent = message;
+            setTimeout(() => {
+                errorMessage.textContent = '';
+            }, 5000);
+        }
+    </script>
+</body>
+</html>
