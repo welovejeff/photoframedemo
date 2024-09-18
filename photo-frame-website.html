@@ -3,8 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Photo Framing Website</title>
+    <title>AW Generator 2.0</title>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Comic+Neue&display=swap');
+        
         body {
             font-family: Arial, sans-serif;
             display: flex;
@@ -13,15 +15,51 @@
             min-height: 100vh;
             margin: 0;
             background-color: #f0f0f0;
+            background-image: url('bg.png');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
         }
         .container {
-            text-align: center;
-            background-color: white;
-            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 60px;
             border-radius: 8px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
             max-width: 90%;
-            width: 600px;
+            width: 800px;
+        }
+        .header-image {
+            width: 100%;
+            max-height: 200px;
+            object-fit: contain;
+            margin-bottom: 10px;
+        }
+        .comic-sans-text {
+            font-family: 'Comic Neue', cursive;
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: xx-large;
+            font-weight: 900;
+        }
+        .content-wrapper {
+            display: flex;
+        }
+        .left-panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        .right-panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-left: 20px;
         }
         #frameCanvas {
             max-width: 100%;
@@ -29,52 +67,52 @@
             cursor: move;
         }
         #framePreview {
-            max-width: 100px;
-            margin-top: 10px;
+            max-width: 100%;
+            max-height: 400px;
+            object-fit: contain;
         }
         #errorMessage {
             color: red;
             margin-top: 10px;
         }
         #instructions {
-            background-color: #e6f7ff;
             border: 1px solid #91d5ff;
             border-radius: 4px;
             padding: 10px;
             margin-top: 20px;
             text-align: left;
+            display: block;
+            width: 100%;
+            height: 200px;
+            background-color: rgba(255, 255, 255, 0.8);
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Add a Frame to Your Photo</h1>
-        <input type="file" id="imageUpload" accept="image/*">
-        <br><br>
-        <label for="frameSelect">Choose a frame:</label>
-        <select id="frameSelect">
-            <option value="placeholder-frame.png">Placeholder Frame</option>
-        </select>
-        <br>
-        <img id="framePreview" src="https://via.placeholder.com/100" alt="Frame Preview">
-        <br><br>
-        <label for="photoSize">Photo Size:</label>
-        <input type="range" id="photoSize" min="50" max="200" value="100">
-        <br><br>
-        <canvas id="frameCanvas"></canvas>
-        <div id="errorMessage"></div>
-        <br><br>
-        <button id="downloadBtn" disabled>Download Framed Photo</button>
-        <!-- <div id="instructions">
-            <h3>Instructions:</h3>
-            <p>1. Replace the placeholder frame image with your own:</p>
-            <ul>
-                <li>Save your frame image as "placeholder-frame.png" in the same directory as this HTML file.</li>
-                <li>Ensure your frame image has a transparent center.</li>
-            </ul>
-            <p>2. Refresh this page after adding your frame image.</p>
-            <p>3. Upload a photo, adjust the photo size, and reposition as needed.</p>
-        </div> -->
+        <img src="header.png" alt="Header" class="header-image">
+        <p class="comic-sans-text">Hit up your friends and colleagues and let them know you'll, like, totally beattending Advertising Week New York's 20th Anniversary.</p>
+        <div class="content-wrapper">
+            <div class="left-panel">
+                <canvas id="frameCanvas"></canvas>
+            </div>
+            <div class="right-panel">
+                <h1>Add Your Headshot</h1>
+                <input type="file" id="imageUpload" accept="image/*">
+                <br><br>
+                <label for="frameSelect">Choose a frame:</label>
+                <select id="frameSelect">
+                    <option value="placeholder-frame.png">Fashionista Art</option>
+                </select>
+                <br><br>
+                <label for="photoSize">Resize Your Headshot:</label>
+                <input type="range" id="photoSize" min="25" max="100" value="50">
+                <br><br>
+                <div id="errorMessage"></div>
+                <br><br>
+                <button id="downloadBtn" disabled>Download Your Photo</button>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -85,7 +123,6 @@
         const ctx = canvas.getContext('2d');
         const downloadBtn = document.getElementById('downloadBtn');
         const errorMessage = document.getElementById('errorMessage');
-        const framePreview = document.getElementById('framePreview');
         let originalImage = null;
         let frameImage = null;
         let photoX = 0;
@@ -97,12 +134,10 @@
         // Load the frame preview
         const framePreviewImg = new Image();
         framePreviewImg.onload = function() {
-            framePreview.src = this.src;
             frameImage = this;
             drawImageWithFrame();
         }
         framePreviewImg.onerror = function() {
-            framePreview.src = 'https://via.placeholder.com/100/?text=Frame+Not+Found';
             showError("Frame image not found. Please follow the instructions below.");
         }
         framePreviewImg.src = frameSelect.value;
@@ -169,9 +204,8 @@
         }
 
         function drawImageWithFrame() {
-            if (!originalImage || !frameImage) return;
+            if (!frameImage) return;
 
-            const scale = photoSize.value / 100;
             const frameWidth = frameImage.width;
             const frameHeight = frameImage.height;
 
@@ -181,10 +215,13 @@
             // Clear the canvas
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-            // Draw the scaled and positioned original image
-            const scaledWidth = originalImage.width * scale;
-            const scaledHeight = originalImage.height * scale;
-            ctx.drawImage(originalImage, photoX, photoY, scaledWidth, scaledHeight);
+            if (originalImage) {
+                const scale = photoSize.value / 200;  // Changed from 100 to 200 to make scaling smaller
+                // Draw the scaled and positioned original image
+                const scaledWidth = originalImage.width * scale;
+                const scaledHeight = originalImage.height * scale;
+                ctx.drawImage(originalImage, photoX, photoY, scaledWidth, scaledHeight);
+            }
 
             // Draw the frame on top
             ctx.drawImage(frameImage, 0, 0, frameWidth, frameHeight);
