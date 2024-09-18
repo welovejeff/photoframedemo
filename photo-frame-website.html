@@ -63,12 +63,13 @@
             justify-content: center;
             align-items: center;
             flex-grow: 1;
+            padding: 20px;
         }
         .container {
             display: flex;
             flex-direction: column;
             background-color: rgba(255, 255, 255, 0.9);
-            padding: 60px;
+            padding: 30px;
             border-radius: 8px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
             max-width: 90%;
@@ -88,22 +89,17 @@
             font-size: xx-large;
             font-weight: 900;
         }
-        .content-wrapper {
+        .panels-wrapper {
             display: flex;
+            flex-wrap: wrap;
         }
-        .left-panel {
-            flex: 1;
+        .left-panel, .right-panel {
+            flex: 1 1 300px;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-        }
-        .right-panel {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding-left: 20px;
+            padding: 10px;
         }
         #frameCanvas {
             max-width: 100%;
@@ -161,6 +157,31 @@
             color: #333;
             font-weight: 900;
         }
+        @media (max-width: 768px) {
+            .browser-bar {
+                flex-wrap: wrap;
+            }
+            .address-bar {
+                order: -1;
+                width: 100%;
+                margin-bottom: 10px;
+            }
+            .container {
+                padding: 20px;
+            }
+            .comic-sans-text {
+                font-size: large;
+            }
+            .panels-wrapper {
+                flex-direction: column;
+            }
+            .left-panel, .right-panel {
+                width: 100%;
+            }
+            .bottom-bar-text {
+                font-size: 14px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -175,7 +196,7 @@
         <div class="container">
             <img src="header.png" alt="Header" class="header-image">
             <p class="comic-sans-text">Hit up your friends and colleagues and let them know you'll, like, totally beattending Advertising Week New York's 20th Anniversary.</p>
-            <div class="content-wrapper">
+            <div class="panels-wrapper">
                 <div class="left-panel">
                     <canvas id="frameCanvas"></canvas>
                     <p class="tooltip">You can move your image in the frame after upload as well</p>
