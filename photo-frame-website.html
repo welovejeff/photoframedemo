@@ -26,6 +26,7 @@
         #frameCanvas {
             max-width: 100%;
             margin-top: 20px;
+            cursor: move;
         }
         #framePreview {
             max-width: 100px;
@@ -57,8 +58,8 @@
         <br>
         <img id="framePreview" src="https://via.placeholder.com/100" alt="Frame Preview">
         <br><br>
-        <label for="frameSize">Frame Size:</label>
-        <input type="range" id="frameSize" min="1" max="20" value="10">
+        <label for="photoSize">Photo Size:</label>
+        <input type="range" id="photoSize" min="50" max="200" value="100">
         <br><br>
         <canvas id="frameCanvas"></canvas>
         <div id="errorMessage"></div>
@@ -72,25 +73,33 @@
                 <li>Ensure your frame image has a transparent center.</li>
             </ul>
             <p>2. Refresh this page after adding your frame image.</p>
-            <p>3. Upload a photo and adjust the frame size as needed.</p>
+            <p>3. Upload a photo, adjust the photo size, and reposition as needed.</p>
         </div> -->
     </div>
 
     <script>
         const imageUpload = document.getElementById('imageUpload');
         const frameSelect = document.getElementById('frameSelect');
-        const frameSize = document.getElementById('frameSize');
+        const photoSize = document.getElementById('photoSize');
         const canvas = document.getElementById('frameCanvas');
         const ctx = canvas.getContext('2d');
         const downloadBtn = document.getElementById('downloadBtn');
         const errorMessage = document.getElementById('errorMessage');
         const framePreview = document.getElementById('framePreview');
         let originalImage = null;
+        let frameImage = null;
+        let photoX = 0;
+        let photoY = 0;
+        let isDragging = false;
+        let lastMouseX = 0;
+        let lastMouseY = 0;
 
         // Load the frame preview
         const framePreviewImg = new Image();
         framePreviewImg.onload = function() {
             framePreview.src = this.src;
+            frameImage = this;
+            drawImageWithFrame();
         }
         framePreviewImg.onerror = function() {
             framePreview.src = 'https://via.placeholder.com/100/?text=Frame+Not+Found';
@@ -105,6 +114,8 @@
             reader.onload = function(event) {
                 originalImage = new Image();
                 originalImage.onload = function() {
+                    photoX = 0;
+                    photoY = 0;
                     drawImageWithFrame();
                     downloadBtn.disabled = false;
                 }
@@ -119,31 +130,64 @@
             reader.readAsDataURL(file);
         });
 
-        frameSelect.addEventListener('change', drawImageWithFrame);
-        frameSize.addEventListener('input', drawImageWithFrame);
+        frameSelect.addEventListener('change', function() {
+            framePreviewImg.src = frameSelect.value;
+        });
+        photoSize.addEventListener('input', drawImageWithFrame);
+
+        canvas.addEventListener('mousedown', startDragging);
+        canvas.addEventListener('mousemove', drag);
+        canvas.addEventListener('mouseup', stopDragging);
+        canvas.addEventListener('mouseleave', stopDragging);
+
+        canvas.addEventListener('touchstart', startDragging);
+        canvas.addEventListener('touchmove', drag);
+        canvas.addEventListener('touchend', stopDragging);
+
+        function startDragging(e) {
+            isDragging = true;
+            lastMouseX = (e.clientX || e.touches[0].clientX) - canvas.offsetLeft;
+            lastMouseY = (e.clientY || e.touches[0].clientY) - canvas.offsetTop;
+        }
+
+        function drag(e) {
+            if (!isDragging) return;
+            e.preventDefault();
+            const mouseX = (e.clientX || e.touches[0].clientX) - canvas.offsetLeft;
+            const mouseY = (e.clientY || e.touches[0].clientY) - canvas.offsetTop;
+            const dx = mouseX - lastMouseX;
+            const dy = mouseY - lastMouseY;
+            photoX += dx;
+            photoY += dy;
+            lastMouseX = mouseX;
+            lastMouseY = mouseY;
+            drawImageWithFrame();
+        }
+
+        function stopDragging() {
+            isDragging = false;
+        }
 
         function drawImageWithFrame() {
-            if (!originalImage) return;
+            if (!originalImage || !frameImage) return;
 
-            const frameBorderSize = frameSize.value / 100;
-            const frameWidth = originalImage.width * (1 + frameBorderSize * 2);
-            const frameHeight = originalImage.height * (1 + frameBorderSize * 2);
+            const scale = photoSize.value / 100;
+            const frameWidth = frameImage.width;
+            const frameHeight = frameImage.height;
 
             canvas.width = frameWidth;
             canvas.height = frameHeight;
 
-            // Draw the original image first
-            ctx.drawImage(originalImage, 0, 0, canvas.width, canvas.height);
+            // Clear the canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Draw the scaled and positioned original image
+            const scaledWidth = originalImage.width * scale;
+            const scaledHeight = originalImage.height * scale;
+            ctx.drawImage(originalImage, photoX, photoY, scaledWidth, scaledHeight);
 
             // Draw the frame on top
-            const frame = new Image();
-            frame.onload = function() {
-                ctx.drawImage(frame, 0, 0, frameWidth, frameHeight);
-            }
-            frame.onerror = function() {
-                showError("Failed to load the frame. Please check if the frame image exists.");
-            }
-            frame.src = frameSelect.value;
+            ctx.drawImage(frameImage, 0, 0, frameWidth, frameHeight);
         }
 
         downloadBtn.addEventListener('click', function() {
