@@ -206,6 +206,51 @@
             background-color: #f0f;
             animation: confetti 5s ease-in-out infinite;
         }
+        /* Modal styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1001;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            width: 300px;
+            background-color: #f0f0f0;
+            border: 3px solid #0000ff;
+            box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.5);
+        }
+        .modal-content {
+            padding: 20px;
+        }
+        .modal-header {
+            background-color: #0000ff;
+            color: white;
+            padding: 5px 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: move;
+        }
+        .close-button {
+            color: white;
+            font-size: 20px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .share-options {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        .share-option {
+            background-color: #ddd;
+            border: 1px solid #999;
+            padding: 5px 10px;
+            cursor: pointer;
+            font-size: 14px;
+        }
     </style>
 </head>
 <body>
@@ -214,7 +259,7 @@
         <div class="browser-button"></div>
         <div class="browser-button"></div>
         <div class="address-bar">AW Generator 2.0</div>
-        <button class="share-button">Share!</button>
+        <button class="share-button" id="shareButton">Share!</button>
     </div>
     <div class="content-wrapper">
         <div class="container">
@@ -248,6 +293,27 @@
     <div class="bottom-bar">
         <div class="visitor-counter">Visitors: <span id="visitorCount">0</span></div>
         <div class="bottom-bar-text">October 7-10, 2024 // The Penn District // #AWNEWYORK24</div>
+    </div>
+
+    <!-- Share Modal -->
+    <div id="shareModal" class="modal">
+        <div class="modal-header" id="modalHeader">
+            <span>Share This Awesome Site!</span>
+            <span class="close-button" id="closeModal">&times;</span>
+        </div>
+        <div class="modal-content">
+            <p>Choose your favorite platform to share:</p>
+            <div class="share-options">
+                <button class="share-option">Facebook</button>
+                <button class="share-option">Twitter</button>
+                <button class="share-option">Instagram</button>
+                <button class="share-option">LinkedIn</button>
+                <button class="share-option">Pinterest</button>
+                <button class="share-option">WhatsApp</button>
+                <button class="share-option">Email</button>
+                <button class="share-option">Copy Link</button>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -416,6 +482,59 @@
                     confetti.remove();
                 }, 5000);
             }
+        }
+
+        // Share Modal
+        const shareButton = document.getElementById('shareButton');
+        const shareModal = document.getElementById('shareModal');
+        const closeModal = document.getElementById('closeModal');
+        const modalHeader = document.getElementById('modalHeader');
+
+        shareButton.addEventListener('click', () => {
+            shareModal.style.display = 'block';
+        });
+
+        closeModal.addEventListener('click', () => {
+            shareModal.style.display = 'none';
+        });
+
+        window.addEventListener('click', (event) => {
+            if (event.target === shareModal) {
+                shareModal.style.display = 'none';
+            }
+        });
+
+        // Share options functionality (you can implement actual sharing logic here)
+        const shareOptions = document.querySelectorAll('.share-option');
+        shareOptions.forEach(option => {
+            option.addEventListener('click', () => {
+                alert(`Sharing via ${option.textContent}! (This is a placeholder action)`);
+            });
+        });
+
+        // Make modal draggable
+        let isDraggingModal = false;
+        let modalOffsetX, modalOffsetY;
+
+        modalHeader.addEventListener('mousedown', startDraggingModal);
+        document.addEventListener('mousemove', dragModal);
+        document.addEventListener('mouseup', stopDraggingModal);
+
+        function startDraggingModal(e) {
+            isDraggingModal = true;
+            modalOffsetX = e.clientX - shareModal.offsetLeft;
+            modalOffsetY = e.clientY - shareModal.offsetTop;
+        }
+
+        function dragModal(e) {
+            if (!isDraggingModal) return;
+            e.preventDefault();
+            shareModal.style.left = (e.clientX - modalOffsetX) + 'px';
+            shareModal.style.top = (e.clientY - modalOffsetY) + 'px';
+        }
+
+        function stopDraggingModal() {
+            isDraggingModal = false;
         }
     </script>
 </body>
