@@ -26,6 +26,9 @@
             padding: 10px;
             display: flex;
             align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
         }
         .browser-button {
             width: 20px;
@@ -379,6 +382,7 @@
 
         // Visitor counter
         const visitorCount = document.getElementById('visitorCount');
+        const visitorCounter = document.querySelector('.visitor-counter');
         let count = Math.floor(Math.random() * 10000) + 1000; // Start with a random number between 1000 and 11000
         visitorCount.textContent = count;
 
@@ -390,7 +394,7 @@
 
         // Easter egg
         let clickCount = 0;
-        visitorCount.addEventListener('click', () => {
+        visitorCounter.addEventListener('click', () => {
             clickCount++;
             if (clickCount === 5) {
                 createConfetti();
