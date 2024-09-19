@@ -145,7 +145,7 @@
             padding: 10px;
             display: flex;
             align-items: center;
-            justify-content: flex-end;
+            justify-content: space-between;
             position: fixed;
             bottom: 0;
             left: 0;
@@ -156,6 +156,15 @@
             font-size: 16px;
             color: #333;
             font-weight: 900;
+        }
+        .visitor-counter {
+            font-family: 'Digital', 'Courier New', monospace;
+            font-size: 16px;
+            color: #00ff00;
+            background-color: #000;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
         }
         @media (max-width: 768px) {
             .browser-bar {
@@ -181,6 +190,18 @@
             .bottom-bar-text {
                 font-size: 14px;
             }
+        }
+        /* Easter egg animation styles */
+        @keyframes confetti {
+            0% { transform: translateY(0) rotateZ(0); opacity: 1; }
+            100% { transform: translateY(1000px) rotateZ(720deg); opacity: 0; }
+        }
+        .confetti {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            background-color: #f0f;
+            animation: confetti 5s ease-in-out infinite;
         }
     </style>
 </head>
@@ -222,6 +243,7 @@
         </div>
     </div>
     <div class="bottom-bar">
+        <div class="visitor-counter">Visitors: <span id="visitorCount">0</span></div>
         <div class="bottom-bar-text">October 7-10, 2024 // The Penn District // #AWNEWYORK24</div>
     </div>
 
@@ -353,6 +375,43 @@
             setTimeout(() => {
                 errorMessage.textContent = '';
             }, 5000);
+        }
+
+        // Visitor counter
+        const visitorCount = document.getElementById('visitorCount');
+        let count = Math.floor(Math.random() * 10000) + 1000; // Start with a random number between 1000 and 11000
+        visitorCount.textContent = count;
+
+        setInterval(() => {
+            const increase = Math.floor(Math.random() * 10) + 1; // Random increase between 1 and 10
+            count += increase; // Always increase
+            visitorCount.textContent = count;
+        }, 5000); // Update every 5 seconds
+
+        // Easter egg
+        let clickCount = 0;
+        visitorCount.addEventListener('click', () => {
+            clickCount++;
+            if (clickCount === 5) {
+                createConfetti();
+                clickCount = 0;
+            }
+        });
+
+        function createConfetti() {
+            const colors = ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff', '#00ffff'];
+            for (let i = 0; i < 100; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.style.left = Math.random() * window.innerWidth + 'px';
+                confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.animationDuration = (Math.random() * 3 + 2) + 's';
+                confetti.style.animationDelay = Math.random() * 5 + 's';
+                document.body.appendChild(confetti);
+                setTimeout(() => {
+                    confetti.remove();
+                }, 5000);
+            }
         }
     </script>
 </body>
