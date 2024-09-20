@@ -45,6 +45,38 @@
             padding: 2px 5px;
             font-family: 'Courier New', monospace;
             font-size: 24px;
+            cursor: pointer;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .address-bar::after {
+            content: '\25BC';
+            font-size: 15px;
+            color: #808080;
+            margin-left: 5px;
+            margin-right: 10px;
+        }
+        .address-bar-dropdown {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            width: 100%;
+            background-color: white;
+            border: 1px solid #808080;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            z-index: 1001;
+        }
+        .address-bar-dropdown a {
+            display: block;
+            padding: 10px;
+            text-decoration: none;
+            color: black;
+        }
+        .address-bar-dropdown a:hover {
+            background-color: #f0f0f0;
         }
         .share-button {
             background-color: #4CAF50;
@@ -258,7 +290,14 @@
         <div class="browser-button"></div>
         <div class="browser-button"></div>
         <div class="browser-button"></div>
-        <div class="address-bar">AW Generator 2.0</div>
+        <div class="address-bar" id="addressBar">AW Generator 2.0
+            <div class="address-bar-dropdown" id="addressBarDropdown">
+                <a>AW Generator 2.0</a>
+                <a href="https://newyork2024.advertisingweek.com/register" target="_blank" rel="noopener noreferrer">Register to Attend #AWNewYork24</a>
+                <a href="https://newyork2024.advertisingweek.com/aw/schedule/" target="_blank" rel="noopener noreferrer">See the Schedule of Speakers</a>
+                <a href="https://advertisingweek.com/fif/" target="_blank" rel="noopener noreferrer">Learn about the Future is Female Awards</a>
+            </div>
+        </div>
         <button class="share-button" id="shareButton">Share!</button>
     </div>
     <div class="content-wrapper">
@@ -462,7 +501,7 @@
         let clickCount = 0;
         visitorCounter.addEventListener('click', () => {
             clickCount++;
-            if (clickCount === 5) {
+            if (clickCount === 1) {
                 createConfetti();
                 clickCount = 0;
             }
@@ -470,7 +509,7 @@
 
         function createConfetti() {
             const colors = ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff', '#00ffff'];
-            for (let i = 0; i < 100; i++) {
+            for (let i = 0; i < 250; i++) {
                 const confetti = document.createElement('div');
                 confetti.className = 'confetti';
                 confetti.style.left = Math.random() * window.innerWidth + 'px';
@@ -536,6 +575,27 @@
         function stopDraggingModal() {
             isDraggingModal = false;
         }
+
+        // Address bar dropdown functionality
+        const addressBar = document.getElementById('addressBar');
+        const addressBarDropdown = document.getElementById('addressBarDropdown');
+
+        addressBar.addEventListener('click', () => {
+            addressBarDropdown.style.display = addressBarDropdown.style.display === 'block' ? 'none' : 'block';
+        });
+
+        document.addEventListener('click', (event) => {
+            if (!addressBar.contains(event.target)) {
+                addressBarDropdown.style.display = 'none';
+            }
+        });
+
+        addressBarDropdown.addEventListener('click', (event) => {
+            if (event.target.tagName === 'A') {
+                addressBar.firstChild.textContent = event.target.textContent;
+                addressBarDropdown.style.display = 'none';
+            }
+        });
     </script>
 </body>
 </html>
