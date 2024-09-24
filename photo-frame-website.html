@@ -3,12 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AW Generator 2.0</title>
+    <title>AW2.0 Post Generator</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Comic+Neue&display=swap');
         
         body {
             font-family: Papyrus, Comic Neue, fantasy;
+            font-size: larger;
+            font-weight: bold;
             display: flex;
             flex-direction: column;
             min-height: 100vh;
@@ -19,6 +21,9 @@
             background-position: center;
             background-repeat: no-repeat;
             background-attachment: fixed;
+        }
+        h1, .h1 {
+            font-size: larger;
         }
         .browser-bar {
             background-color: #c0c0c0;
@@ -122,7 +127,7 @@
             font-family: 'Comic Sans MS', 'Comic Sans', 'Comic Neue', cursive;
             text-align: center;
             margin-bottom: 20px;
-            font-size: x-large;
+            font-size: 23px;
             font-weight: 900;
         }
         .panels-wrapper {
@@ -170,12 +175,23 @@
         }
         .heart-lockup {
             position: fixed;
-            bottom: 60px;  /* Adjust this value to leave space for the bottom bar */
+            bottom: 60px;
             right: 20px;
-            width: 200px;  /* Doubled from 100px to make it 100% bigger */
+            width: 200px;
             height: auto;
-            z-index: 999;  /* Ensure it's above other content */
+            z-index: 999;
+            animation: rotate360 30s linear infinite;
         }
+
+        @keyframes rotate360 {
+            from {
+                transform: rotate(0deg);
+            }
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
         .bottom-bar {
             background-color: #c0c0c0;
             border-top: 2px solid #808080;
@@ -229,13 +245,13 @@
             }
             .heart-lockup {
                 position: absolute;
-                bottom: -620px;  /* Adjust this value based on the image size */
+                bottom: -620px;
                 right: 50%;
                 transform: translateX(50%);
-                width: 150px;  /* Slightly smaller on mobile */
+                width: 150px;
             }
             .content-wrapper {
-                margin-bottom: 240px;  /* Add space for the heart lockup */
+                margin-bottom: 240px;
             }
         }
         /* Easter egg animation styles */
@@ -341,9 +357,9 @@
         <div class="browser-button"></div>
         <div class="browser-button"></div>
         <div class="browser-button"></div>
-        <div class="address-bar" id="addressBar">AW Generator 2.0
+        <div class="address-bar" id="addressBar">AW2.0 Post Generator
             <div class="address-bar-dropdown" id="addressBarDropdown">
-                <a>AW Generator 2.0</a>
+                <a>AW2.0 Post Generator</a>
                 <a href="https://newyork2024.advertisingweek.com/register" target="_blank" rel="noopener noreferrer">Register to Attend #AWNewYork24</a>
                 <a href="https://newyork2024.advertisingweek.com/aw/schedule/" target="_blank" rel="noopener noreferrer">See the Schedule of Speakers</a>
                 <a href="https://advertisingweek.com/fif/" target="_blank" rel="noopener noreferrer">Learn about the Future is Female Awards</a>
@@ -361,7 +377,7 @@
                     <p class="tooltip">You can move your image in the frame after upload as well</p>
                 </div>
                 <div class="right-panel">
-                    <h1>Add Your Headshot</h1>
+                    <h1>Add Your Headshot:</h1>
                     <div class="file-input-wrapper">
                         <button class="early2000s-button">Choose File</button>
                         <input type="file" id="imageUpload" accept="image/*">
@@ -369,7 +385,12 @@
                     <br><br>
                     <label for="frameSelect">Choose a frame:</label>
                     <select id="frameSelect">
-                        <option value="placeholder-frame.png">Fashionista Art</option>
+                        <option value="frames/LinkedInGenerator_1.png">LinkedIn Generator 1</option>
+                        <option value="frames/LinkedInGenerator_2.png">LinkedIn Generator 2</option>
+                        <option value="frames/LinkedInGenerator_3.png">LinkedIn Generator 3</option>
+                        <option value="frames/LinkedInGenerator_4.png">LinkedIn Generator 4</option>
+                        <option value="frames/LinkedInGenerator_5.png">LinkedIn Generator 5</option>
+                        <option value="frames/LinkedInGenerator_6.png">LinkedIn Generator 6</option>
                     </select>
                     <br><br>
                     <label for="photoSize">Resize Your Headshot:</label>
@@ -396,14 +417,11 @@
         <div class="modal-content">
             <p>Choose your favorite platform to share:</p>
             <div class="share-options">
-                <button class="share-option">Facebook</button>
-                <button class="share-option">Twitter</button>
-                <button class="share-option">Instagram</button>
-                <button class="share-option">LinkedIn</button>
-                <button class="share-option">Pinterest</button>
-                <button class="share-option">WhatsApp</button>
-                <button class="share-option">Email</button>
-                <button class="share-option">Copy Link</button>
+                <button class="share-option" data-platform="linkedin">LinkedIn</button>
+                <button class="share-option" data-platform="twitter">X</button>
+                <button class="share-option" data-platform="facebook">Facebook</button>
+                <button class="share-option" data-platform="email">Email</button>
+                <button class="share-option" data-platform="copy">Copy Link</button>
             </div>
         </div>
     </div>
@@ -484,8 +502,8 @@
             e.preventDefault();
             const mouseX = (e.clientX || e.touches[0].clientX) - canvas.offsetLeft;
             const mouseY = (e.clientY || e.touches[0].clientY) - canvas.offsetTop;
-            const dx = mouseX - lastMouseX;
-            const dy = mouseY - lastMouseY;
+            const dx = (mouseX - lastMouseX) * 1.5; // Increase this multiplier
+            const dy = (mouseY - lastMouseY) * 1.5; // Increase this multiplier
             photoX += dx;
             photoY += dy;
             lastMouseX = mouseX;
@@ -510,8 +528,7 @@
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
             if (originalImage) {
-                const scale = photoSize.value / 100;  // Changed from 200 to 100 to make scaling 50% by default
-                // Draw the scaled and positioned original image
+                const scale = photoSize.value / 100;
                 const scaledWidth = originalImage.width * scale;
                 const scaledHeight = originalImage.height * scale;
                 ctx.drawImage(originalImage, photoX, photoY, scaledWidth, scaledHeight);
@@ -519,6 +536,9 @@
 
             // Draw the frame on top
             ctx.drawImage(frameImage, 0, 0, frameWidth, frameHeight);
+
+            // Use requestAnimationFrame for smoother updates
+            requestAnimationFrame(drawImageWithFrame);
         }
 
         downloadBtn.addEventListener('click', function() {
@@ -597,11 +617,39 @@
             }
         });
 
-        // Share options functionality (you can implement actual sharing logic here)
+        // Share options functionality
         const shareOptions = document.querySelectorAll('.share-option');
+        const shareUrl = 'https://advertisingweek.com/event/awnewyork-2024/';
+        const shareText = 'Join me at Advertising Week New York 2024!';
+
         shareOptions.forEach(option => {
             option.addEventListener('click', () => {
-                alert(`Sharing via ${option.textContent}! (This is a placeholder action)`);
+                const platform = option.getAttribute('data-platform');
+                let shareLink;
+
+                switch (platform) {
+                    case 'linkedin':
+                        shareLink = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`;
+                        break;
+                    case 'twitter':
+                        shareLink = `https://twitter.com/intent/tweet?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(shareText)}`;
+                        break;
+                    case 'facebook':
+                        shareLink = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`;
+                        break;
+                    case 'email':
+                        shareLink = `mailto:?subject=${encodeURIComponent(shareText)}&body=${encodeURIComponent(shareUrl)}`;
+                        break;
+                    case 'copy':
+                        navigator.clipboard.writeText(shareUrl).then(() => {
+                            alert('Link copied to clipboard!');
+                        });
+                        return;
+                }
+
+                if (shareLink) {
+                    window.open(shareLink, '_blank');
+                }
             });
         });
 
