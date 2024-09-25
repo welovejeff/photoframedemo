@@ -180,15 +180,19 @@
             width: 200px;
             height: auto;
             z-index: 999;
-            animation: rotate360 30s linear infinite;
+            animation: flip 3s linear infinite;
+            transform-style: preserve-3d;
         }
 
-        @keyframes rotate360 {
-            from {
-                transform: rotate(0deg);
+        @keyframes flip {
+            0% {
+                transform: rotateY(0deg);
             }
-            to {
-                transform: rotate(360deg);
+            50% {
+                transform: rotateY(180deg);
+            }
+            100% {
+                transform: rotateY(360deg);
             }
         }
 
@@ -249,7 +253,9 @@
                 right: 50%;
                 transform: translateX(50%);
                 width: 150px;
+                animation: flip 3s linear infinite;
             }
+
             .content-wrapper {
                 margin-bottom: 240px;
             }
@@ -303,6 +309,7 @@
             justify-content: center;
             gap: 10px;
             margin-top: 15px;
+            margin-bottom: 15px;
         }
         .share-option {
             background-color: #ddd;
@@ -377,7 +384,7 @@
                     <p class="tooltip">You can move your image in the frame after upload as well</p>
                 </div>
                 <div class="right-panel">
-                    <h1>Add Your Headshot:</h1>
+                    <p>Add your headshot:</p>
                     <div class="file-input-wrapper">
                         <button class="early2000s-button">Choose File</button>
                         <input type="file" id="imageUpload" accept="image/*">
@@ -385,15 +392,16 @@
                     <br><br>
                     <label for="frameSelect">Choose a frame:</label>
                     <select id="frameSelect">
-                        <option value="frames/LinkedInGenerator_1.png">LinkedIn Generator 1</option>
-                        <option value="frames/LinkedInGenerator_2.png">LinkedIn Generator 2</option>
-                        <option value="frames/LinkedInGenerator_3.png">LinkedIn Generator 3</option>
-                        <option value="frames/LinkedInGenerator_4.png">LinkedIn Generator 4</option>
-                        <option value="frames/LinkedInGenerator_5.png">LinkedIn Generator 5</option>
-                        <option value="frames/LinkedInGenerator_6.png">LinkedIn Generator 6</option>
+                        <option value="frames/LinkedInGenerator_1.png">Background 1</option>
+                        <option value="frames/LinkedInGenerator_2.png">Background 2</option>
+                        <option value="frames/LinkedInGenerator_3.png">Background 3</option>
+                        <option value="frames/LinkedInGenerator_4.png">Background 4</option>
+                        <option value="frames/LinkedInGenerator_5.png">Background 5</option>
+                        <option value="frames/LinkedInGenerator_6.png">Background 6</option>
+                        <option value="frames/LinkedInGenerator_7.png">Background 7</option>
                     </select>
                     <br><br>
-                    <label for="photoSize">Resize Your Headshot:</label>
+                    <label for="photoSize">Resize your headshot:</label>
                     <input type="range" id="photoSize" min="25" max="100" value="50">
                     <div id="errorMessage"></div>
                     <br>
@@ -411,11 +419,9 @@
     <!-- Share Modal -->
     <div id="shareModal" class="modal">
         <div class="modal-header" id="modalHeader">
-            <span>Share This Awesome Site!</span>
+            <span>Share your bomb-diggity pic!</span>
             <span class="close-button" id="closeModal">&times;</span>
         </div>
-        <div class="modal-content">
-            <p>Choose your favorite platform to share:</p>
             <div class="share-options">
                 <button class="share-option" data-platform="linkedin">LinkedIn</button>
                 <button class="share-option" data-platform="twitter">X</button>
